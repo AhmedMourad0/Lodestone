@@ -1,0 +1,52 @@
+
+CREATE TABLE IF NOT EXISTS Location (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    map_id TEXT,
+    map_address TEXT
+);
+
+insertOrReplaceLocation:
+INSERT OR REPLACE INTO Location (
+    id,
+    timestamp,
+    name,
+    latitude,
+    longitude,
+    map_id,
+    map_address
+) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+findAllLocations:
+SELECT
+    id,
+    timestamp,
+    name,
+    latitude,
+    longitude,
+    map_id,
+    map_address
+FROM Location LIMIT :limit OFFSET :offset;
+
+findLocationById:
+SELECT
+    id,
+    timestamp,
+    name,
+    latitude,
+    longitude,
+    map_id,
+    map_address
+FROM Location WHERE id = ?;
+
+deleteLocation:
+DELETE FROM Location WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+countLocations:
+SELECT count(*) FROM Location;
