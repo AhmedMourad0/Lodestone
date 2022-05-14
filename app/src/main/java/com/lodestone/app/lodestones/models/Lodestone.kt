@@ -11,7 +11,6 @@ data class Lodestone<O : Lodestone.Origin>(
     val origin: O,
     val name: String,
     val coordinates: Coordinates,
-    val mapId: String?,
     val mapAddress: String?
 ) : Parcelable {
     sealed interface Origin : Parcelable
@@ -24,10 +23,9 @@ data class Lodestone<O : Lodestone.Origin>(
     ) : Origin
 }
 
-val QiblaLodestone = Lodestone(
+val AlQiblaLodestone = Lodestone(
     origin = Lodestone.Retrieved(LodestoneId(-1), System.currentTimeMillis()),
     name = "Al Qibla",
     coordinates = KaabaCoordinates,
-    mapId = null,
     mapAddress = "Masjid al Haram, Mecca, SA"
 )

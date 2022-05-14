@@ -1,6 +1,9 @@
 package com.lodestone.app.main
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
+import com.lodestone.app.compose.LocalActivity
 import com.lodestone.app.compose.LocalSharedViewModel
 import com.lodestone.app.compose.LodestoneTheme
 import com.lodestone.app.lodestones.frontend.LodestoneScreen
@@ -34,7 +39,10 @@ class MainActivity : AppCompatActivity() {
         setContent {
             LodestoneTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    CompositionLocalProvider(LocalSharedViewModel provides model) {
+                    CompositionLocalProvider(
+                        LocalSharedViewModel provides model,
+                        LocalActivity provides this@MainActivity
+                    ) {
                         LodestoneScreen()
                     }
                 }
@@ -47,12 +55,23 @@ class MainActivity : AppCompatActivity() {
         addObservers()
     }
 
+    @SuppressLint("MissingPermission")
     private fun addObservers() {
+        if (!hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            toast("Missing permissions")
+        }
         model.getDirections().catch { e ->
             Timber.e(e)
             toast("Something went wrong")
         }.filterNotNull().collectLatestIn(this, Lifecycle.State.RESUMED) {
             model.state.value = model.state.value.copy(directions = it)
         }
+    }
+}
+
+@Suppress("SameParameterValue")
+private fun Context.hasPermissions(vararg permissions: String): Boolean {
+    return permissions.all {
+        ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 }

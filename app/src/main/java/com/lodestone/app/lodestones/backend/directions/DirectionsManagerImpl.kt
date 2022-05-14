@@ -64,6 +64,7 @@ class DirectionsManagerImpl @Inject constructor(
                 val destinationAzimuth = azimuth - bearing(currentLocation, destination)
 
                 Directions(
+                    currentLocation = currentLocation,
                     polesDirection = azimuth,
                     destinationDirection = destinationAzimuth.toFloat()
                 )

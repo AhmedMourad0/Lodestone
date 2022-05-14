@@ -1,5 +1,7 @@
 package com.lodestone.app.lodestones.backend
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.paging.PagingSource
 import arrow.core.Either
 import com.lodestone.app.lodestones.models.Coordinates
@@ -14,5 +16,6 @@ interface LodestonesRepository {
     fun findAll(): PagingSource<Long, Lodestone<Lodestone.Retrieved>>
     suspend fun find(id: LodestoneId): Either<LocalReadWriteException, Lodestone<Lodestone.Retrieved>>
     suspend fun delete(id: LodestoneId): Either<LocalReadWriteException, LodestoneId>
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     fun getDirections(destination: Coordinates): Flow<Directions?>
 }

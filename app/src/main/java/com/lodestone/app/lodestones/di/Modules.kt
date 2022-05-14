@@ -63,14 +63,12 @@ object LodestoneProvidedModules {
     }
 
     @Provides
-//    @Singleton
     @InternalApi
     fun provideSqliteDriver(@ApplicationContext context: Context): SqlDriver {
         return sqliteDriver(context)
     }
 
     @Provides
-//    @Singleton
     @InternalApi
     fun provideLodestonesDatabase(@InternalApi driver: SqlDriver): LodestonesDatabase {
         return lodestonesDatabase(driver)

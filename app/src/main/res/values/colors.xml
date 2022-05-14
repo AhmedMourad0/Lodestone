@@ -4,6 +4,7 @@
     <color name="colorPrimaryVariant">#0D1920</color>
     <color name="colorSecondary">#0D1920</color>
     <color name="colorSecondaryVariant">#0D1920</color>
+    <color name="colorAccent">#2453AF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

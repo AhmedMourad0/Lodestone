@@ -1,5 +1,7 @@
 package com.lodestone.app.lodestones.backend
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.paging.PagingSource
 import arrow.core.Either
 import com.lodestone.app.db.LocationQueries
@@ -38,7 +40,6 @@ class LodestonesRepositoryImpl @Inject constructor(
                 name = lodestone.name,
                 latitude = lodestone.coordinates.latitude,
                 longitude = lodestone.coordinates.longitude,
-                map_id = lodestone.mapId,
                 map_address = lodestone.mapAddress
             )
 
@@ -69,6 +70,7 @@ class LodestonesRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun getDirections(destination: Coordinates): Flow<Directions?> {
         return locationManager.getLocationUpdates().flatMapLatest {
             directionsManager.getDirections(it, destination)
@@ -82,7 +84,6 @@ private fun retrievedLocationMapper(
     name: String,
     latitude: Double,
     longitude: Double,
-    mapId: String?,
     mapAddress: String?
 ) = Lodestone(
     origin = Lodestone.Retrieved(id = LodestoneId(id), timestamp = timestamp),
@@ -90,6 +91,5 @@ private fun retrievedLocationMapper(
     coordinates = Coordinates(
         latitude = latitude,
         longitude = longitude
-    ), mapId = mapId,
-    mapAddress = mapAddress
+    ), mapAddress = mapAddress
 )

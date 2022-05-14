@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS Location (
     name TEXT NOT NULL,
     latitude REAL NOT NULL,
     longitude REAL NOT NULL,
-    map_id TEXT,
     map_address TEXT
 );
 
@@ -16,9 +15,8 @@ INSERT OR REPLACE INTO Location (
     name,
     latitude,
     longitude,
-    map_id,
     map_address
-) VALUES (?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?);
 
 findAllLocations:
 SELECT
@@ -27,9 +25,8 @@ SELECT
     name,
     latitude,
     longitude,
-    map_id,
     map_address
-FROM Location LIMIT :limit OFFSET :offset;
+FROM Location ORDER BY id LIMIT :limit OFFSET :offset;
 
 findLocationById:
 SELECT
@@ -38,7 +35,6 @@ SELECT
     name,
     latitude,
     longitude,
-    map_id,
     map_address
 FROM Location WHERE id = ?;
 

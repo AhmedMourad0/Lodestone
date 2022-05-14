@@ -2,11 +2,20 @@ package com.lodestone.app.lodestones.frontend
 
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.cachedIn
+import arrow.core.getOrHandle
 import com.lodestone.app.lodestones.backend.LodestonesRepository
 import com.lodestone.app.lodestones.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -22,51 +31,59 @@ class LodestoneViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
+    val errorMessages = MutableSharedFlow<String>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
+    val lodestonesPager = Pager(PagingConfig(pageSize = 20, initialLoadSize = 20)) {
+        repo.findAll()
+    }.flow.cachedIn(viewModelScope)
+
+    suspend fun onCreateLodestone(lodestoneCreator: LodestoneCreator): Lodestone<Lodestone.Retrieved>? = withContext(Dispatchers.IO) {
+        if (!lodestoneCreator.canCreate) return@withContext null
+        repo.add(Lodestone(
+            origin = Lodestone.Created,
+            name = lodestoneCreator.name,
+            coordinates = lodestoneCreator.coordinates,
+            mapAddress = lodestoneCreator.mapAddress
+        )).getOrHandle {
+            errorMessages.tryEmit("Something went wrong")
+            null
+        }
+    }
 }
 
 @Parcelize
 data class LodestoneState(
-    val lodestoneSelector: LodestoneSelectorState,
-    val lodestoneCreator: LodestoneCreatorState,
-    val showLodestonesBottomSheet: Boolean = false
+    val bottomSheetState: BottomSheetState,
+    val isInputBlocked: Boolean = false
 ) : Parcelable {
     companion object {
         fun default() = LodestoneState(
-            lodestoneSelector = LodestoneSelectorState.default(),
-            lodestoneCreator = LodestoneCreatorState.default(),
-            showLodestonesBottomSheet = false
+            bottomSheetState = LodestoneSelector,
+            isInputBlocked = false
         )
     }
 }
 
 sealed interface LodestoneAction {
-    object AddLodestone
+    data class CreateLodestone(val state: LodestoneCreator) : LodestoneAction
 }
 
-@Parcelize
-data class LodestoneSelectorState(
-    val isShown: Boolean
-) : Parcelable {
-    companion object {
-        fun default() = LodestoneSelectorState(isShown = false)
-    }
-}
+sealed interface BottomSheetState : Parcelable
 
 @Parcelize
-data class LodestoneCreatorState(
-    val isShown: Boolean,
+object LodestoneSelector : BottomSheetState
+
+@Parcelize
+data class LodestoneCreator(
     val name: String,
-    val coordinates: Coordinates?,
-    val mapId: String?,
-    val mapAddress: String?
-) : Parcelable {
-    companion object {
-        fun default() = LodestoneCreatorState(
-            isShown = false,
-            name = "",
-            coordinates = null,
-            mapId = null,
-            mapAddress = null
-        )
-    }
+    val coordinates: Coordinates,
+    val mapAddress: String
+) : BottomSheetState {
+    @IgnoredOnParcel
+    val canCreate = name.isNotBlank() && name.length < 50
 }
