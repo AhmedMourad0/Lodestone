@@ -127,12 +127,12 @@ private fun LodestoneUI(
 ) {
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(topEnd = 40.dp, topStart = 40.dp),
-        sheetBackgroundColor= ColorPrimary.copy(alpha = 0.8f),
+        sheetBackgroundColor= ColorBottomSheet.copy(alpha = 0.8f),
         backgroundColor= ColorPrimary,
         scaffoldState = scaffoldState,
         sheetContent = {
             BottomSheetHandle(modifier = Modifier
-                .background(ColorPrimary)
+                .background(ColorBottomSheet)
                 .fillMaxWidth()
                 .height(BottomSheetScaffoldDefaults.SheetPeekHeight)
             )
@@ -274,11 +274,11 @@ private fun LodestoneSelector(
                 .heightIn(max = configuration.screenHeightDp.dp - 150.dp)
                 .drawWithCache {
                     val topGradient = Brush.verticalGradient(
-                        colors = listOf(ColorPrimary, Color.Transparent),
+                        colors = listOf(ColorBottomSheet, Color.Transparent),
                         endY = size.height / 8
                     )
                     val bottomGradient = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, ColorPrimary),
+                        colors = listOf(Color.Transparent, ColorBottomSheet),
                         startY = size.height - size.height / 8
                     )
                     onDrawWithContent {
@@ -311,7 +311,7 @@ private fun LodestoneSelector(
             onStateChange = onStateChange,
             sharedState = sharedState,
             modifier = Modifier
-                .background(ColorPrimary)
+                .background(ColorBottomSheet)
                 .fillMaxWidth()
         )
     }
