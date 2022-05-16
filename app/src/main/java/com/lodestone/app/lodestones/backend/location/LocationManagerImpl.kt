@@ -23,7 +23,7 @@ class LocationManagerImpl @Inject constructor(
     override fun getLocationUpdates(): Flow<Coordinates> {
         return locationProvider.getLocationUpdates(createLocationRequest())
             .mapLatest { position -> Coordinates(position.latitude, position.longitude) }
-            .flowOn(Dispatchers.Default)
+            .flowOn(Dispatchers.IO)
             .buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST)
             .conflate()
     }
