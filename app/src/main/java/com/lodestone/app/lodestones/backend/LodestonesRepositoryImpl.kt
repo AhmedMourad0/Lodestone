@@ -4,7 +4,7 @@ import android.Manifest
 import androidx.annotation.RequiresPermission
 import androidx.paging.PagingSource
 import arrow.core.Either
-import com.lodestone.app.db.LocationQueries
+import com.lodestone.app.db.LodestoneQueries
 import com.lodestone.app.lodestones.backend.directions.DirectionsManager
 import com.lodestone.app.lodestones.backend.location.LocationManager
 import com.lodestone.app.lodestones.di.InternalApi
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @Reusable
 class LodestonesRepositoryImpl @Inject constructor(
-    @InternalApi private val locationQueries: LocationQueries,
+    @InternalApi private val lodestoneQueries: LodestoneQueries,
     @InternalApi private val directionsManager: DirectionsManager,
     @InternalApi private val locationManager: LocationManager
 ) : LodestonesRepository {
@@ -32,9 +32,9 @@ class LodestonesRepositoryImpl @Inject constructor(
     override suspend fun add(
         lodestone: Lodestone<Lodestone.Created>
     ): Either<LocalReadWriteException, Lodestone<Lodestone.Retrieved>> = local {
-        locationQueries.transactionWithResult {
+        lodestoneQueries.transactionWithResult {
 
-            locationQueries.insertOrReplaceLocation(
+            lodestoneQueries.insertOrReplaceLodestone(
                 id = null,
                 timestamp = System.currentTimeMillis(),
                 name = lodestone.name,
@@ -43,8 +43,8 @@ class LodestonesRepositoryImpl @Inject constructor(
                 map_address = lodestone.mapAddress
             )
 
-            locationQueries.findLocationById(
-                id = locationQueries.lastInsertRowId().executeAsOne(),
+            lodestoneQueries.findLodestoneById(
+                id = lodestoneQueries.lastInsertRowId().executeAsOne(),
                 mapper = ::retrievedLocationMapper
             ).executeAsOne()
         }
@@ -52,20 +52,20 @@ class LodestonesRepositoryImpl @Inject constructor(
 
     override fun findAll(): PagingSource<Long, Lodestone<Lodestone.Retrieved>> {
         return QueryPagingSource(
-            countQuery = locationQueries.countLocations(),
-            transacter = locationQueries,
+            countQuery = lodestoneQueries.countLocations(),
+            transacter = lodestoneQueries,
             dispatcher = Dispatchers.IO
-        ) { limit, offset -> locationQueries.findAllLocations(limit, offset, ::retrievedLocationMapper) }
+        ) { limit, offset -> lodestoneQueries.findAllLodestones(limit, offset, ::retrievedLocationMapper) }
     }
 
     override suspend fun find(
         id: LodestoneId
     ): Either<LocalReadWriteException, Lodestone<Lodestone.Retrieved>> = local {
-        locationQueries.findLocationById(id.v, ::retrievedLocationMapper).executeAsOne()
+        lodestoneQueries.findLodestoneById(id.v, ::retrievedLocationMapper).executeAsOne()
     }
 
     override suspend fun delete(id: LodestoneId): Either<LocalReadWriteException, LodestoneId> = local {
-        locationQueries.deleteLocation(id.v)
+        lodestoneQueries.deleteLodestone(id.v)
         id
     }
 

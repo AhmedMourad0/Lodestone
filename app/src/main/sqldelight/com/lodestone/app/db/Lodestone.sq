@@ -1,5 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS Location (
+CREATE TABLE IF NOT EXISTS Lodestone (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS Location (
     map_address TEXT
 );
 
-insertOrReplaceLocation:
-INSERT OR REPLACE INTO Location (
+insertOrReplaceLodestone:
+INSERT OR REPLACE INTO Lodestone (
     id,
     timestamp,
     name,
@@ -18,7 +18,7 @@ INSERT OR REPLACE INTO Location (
     map_address
 ) VALUES (?, ?, ?, ?, ?, ?);
 
-findAllLocations:
+findAllLodestones:
 SELECT
     id,
     timestamp,
@@ -26,9 +26,9 @@ SELECT
     latitude,
     longitude,
     map_address
-FROM Location ORDER BY id LIMIT :limit OFFSET :offset;
+FROM Lodestone ORDER BY id LIMIT :limit OFFSET :offset;
 
-findLocationById:
+findLodestoneById:
 SELECT
     id,
     timestamp,
@@ -36,13 +36,13 @@ SELECT
     latitude,
     longitude,
     map_address
-FROM Location WHERE id = ?;
+FROM Lodestone WHERE id = ?;
 
-deleteLocation:
-DELETE FROM Location WHERE id = ?;
+deleteLodestone:
+DELETE FROM Lodestone WHERE id = ?;
 
 lastInsertRowId:
 SELECT last_insert_rowid();
 
 countLocations:
-SELECT count(*) FROM Location;
+SELECT count(*) FROM Lodestone;

@@ -1,7 +1,7 @@
 package com.lodestone.app.lodestones.di
 
 import android.content.Context
-import com.lodestone.app.db.LocationQueries
+import com.lodestone.app.db.LodestoneQueries
 import com.lodestone.app.db.LodestonesDatabase
 import com.lodestone.app.lodestones.backend.LodestonesRepository
 import com.lodestone.app.lodestones.backend.LodestonesRepositoryImpl
@@ -77,7 +77,7 @@ object LodestoneProvidedModules {
     @Provides
     @Reusable
     @InternalApi
-    fun provideLocationQueries(@InternalApi db: LodestonesDatabase): LocationQueries {
-        return db.locationQueries
+    fun provideLodestoneQueries(@InternalApi db: LodestonesDatabase): LodestoneQueries {
+        return db.lodestoneQueries
     }
 }
