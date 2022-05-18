@@ -536,7 +536,7 @@ fun LodestoneCreator(
             elevation = ButtonDefaults.elevation(6.dp),
             content = {
                 Text(
-                    text = "Create new location",
+                    text = "Create new lodestone",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
                     maxLines = 1,
